@@ -1,39 +1,54 @@
-import React, { useRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { Fragment, useEffect, useState } from 'react';
+import Nav from '../../components/NavBAr';
+import { HomeViewWrapper, HomeViewTitle, HomeViewCardContainer } from './Home.styles';
+import Layout from '../../components/Layout';
+import Card from '../../components/VideoCard';
+//import mockData from '../../utils/youtube-videos-mock.json';
 
-import { useAuth } from '../../providers/Auth';
-import './Home.styles.css';
+export default function Home() {
+  const [videos, setVideos] = useState({});
+  const [ error, setError ] = useState('');
 
-function HomePage() {
-  const history = useHistory();
-  const sectionRef = useRef(null);
-  const { authenticated, logout } = useAuth();
+  useEffect(() => {
+    const params = `?part=snippet&maxResults=25&q=arduino?regionCode=US&key=AIzaSyAU01tDFZrdl3jZBEwnE07OXB5AokODvjY`;
+    fetch(`https://www.googleapis.com/youtube/v3/search${params}`)
+      .then((res) => res.json())
+      .then((res) => {
+        const data = res;
+        setVideos(data);
+      })
+      .catch((err) => console.log(err.message));
+  }, []);
 
-  function deAuthenticate(event) {
-    event.preventDefault();
-    logout();
-    history.push('/');
+  const mapVideos = (videoList) => {
+    if(videoList) {
+      return videoList.map((video) => {
+        return (
+          <div key={video.etag}>
+          <Card
+            photoHeader={video.snippet.thumbnails.high.url}
+            title={video.snippet.title}
+            description={video.snippet.description}
+          />
+        </div>
+        )
+      });
+    } else {
+      return <p>{error}</p>
+    }
   }
 
   return (
-    <section className="homepage" ref={sectionRef}>
-      <h1>Hello stranger!</h1>
-      {authenticated ? (
-        <>
-          <h2>Good to have you back</h2>
-          <span>
-            <Link to="/" onClick={deAuthenticate}>
-              ← logout
-            </Link>
-            <span className="separator" />
-            <Link to="/secret">show me something cool →</Link>
-          </span>
-        </>
-      ) : (
-        <Link to="/login">let me in →</Link>
-      )}
-    </section>
+    <Fragment>
+      <Nav />
+      <Layout>
+        <HomeViewWrapper>
+          <HomeViewTitle>Welcome to the Challenge!</HomeViewTitle>
+          <HomeViewCardContainer>
+            {mapVideos(videos.items)}
+          </HomeViewCardContainer>
+        </HomeViewWrapper>
+      </Layout>
+    </Fragment>
   );
 }
-
-export default HomePage;
