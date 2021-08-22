@@ -10,7 +10,7 @@ export default function Home() {
   const [ error, setError ] = useState('');
 
   useEffect(() => {
-    const params = `?part=snippet&maxResults=25&q=kitties?regionCode=US&key=AIzaSyAU01tDFZrdl3jZBEwnE07OXB5AokODvjY`;
+    const params = `?part=snippet&maxResults=25&q=arduino?regionCode=US&key=AIzaSyAU01tDFZrdl3jZBEwnE07OXB5AokODvjY`;
     fetch(`https://www.googleapis.com/youtube/v3/search${params}`)
       .then((res) => res.json())
       .then((res) => {

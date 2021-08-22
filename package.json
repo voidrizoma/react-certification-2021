@@ -52,8 +52,8 @@
   },
   "lint-staged": {
     "*.{js, jsx, css, json}": [
-      "pretty-quick --staged",
-      "git add"
+      "yarn run lint:fix",
+      "pretty-quick --staged"
     ]
   },
   "husky": {
